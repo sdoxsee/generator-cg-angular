@@ -18,14 +18,25 @@ var CgangularGenerator = module.exports = function CgangularGenerator(args, opti
                 file: 'index.html',
                 marker: cgUtils.JS_MARKER,
                 template: '<script src="<%= filename %>"></script>'
-            },
-            less: {
-                relativeToModule: true,
-                file: '<%= module %>.less',
-                marker: cgUtils.LESS_MARKER,
-                template: '@import "<%= filename %>";'
             }
         };
+
+        if(this.config.get('sass')) {
+          inject.scss = {
+            relativeToModule: true,
+            file: '<%= module %>.scss',
+            marker: cgUtils.SASS_MARKER,
+            template: '@import "<%= filename %>";'
+          };
+        } else {
+          inject.less = {
+            relativeToModule: true,
+            file: '<%= module %>.less',
+            marker: cgUtils.LESS_MARKER,
+            template: '@import "<%= filename %>";'
+          };
+        }
+
         this.config.set('inject',inject);
         this.config.save();
         this.installDependencies({ skipInstall: options['skip-install'] });
@@ -77,6 +88,23 @@ CgangularGenerator.prototype.askForUiRouter = function askFor() {
         this.config.set('uirouter',this.uirouter);
         cb();
     }.bind(this));
+};
+
+CgangularGenerator.prototype.askForSass = function askFor () {
+  var cb = this.async();
+
+  var prompts = [{
+    name:'sass',
+    type:'confirm',
+    message: 'Do you want to use SASS?',
+    default:false
+  }];
+
+  this.prompt(prompts, function(props) {
+    this.sass = props.sass;
+    this.config.set('sass', this.sass);
+    cb();
+  }.bind(this));
 };
 
 CgangularGenerator.prototype.app = function app() {

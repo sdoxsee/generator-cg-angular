@@ -195,6 +195,7 @@ module.exports = function (grunt) {
         frameworks: ['jasmine'],
         files: [  //this files data is also updated in the watch handler, if updated change there too
           '<%%= dom_munger.data.appjs %>',
+          '<%%= ngtemplates.main.dest %>',
           'bower_components/angular-mocks/angular-mocks.js',
           createFolderGlobs('*-spec.js')
         ],
@@ -213,7 +214,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('build',['jshint','clean:before',<% if(sass) { print("'sass'"); } else { print("'less'"); } %>,'dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
-  grunt.registerTask('serve', ['dom_munger:read',<% if(sass) { print("'sass',"); } %>'jshint','connect', 'watch']);
+  grunt.registerTask('serve', ['dom_munger:read',<% if(sass) { print("'sass',"); } %>'jshint','ngtemplates','connect', 'watch']);
   grunt.registerTask('test',['dom_munger:read','karma:all_tests']);
 
   grunt.event.on('watch', function(action, filepath) {
@@ -235,7 +236,7 @@ module.exports = function (grunt) {
 
       //if the spec exists then lets run it
       if (grunt.file.exists(spec)) {
-        var files = [].concat(grunt.config('dom_munger.data.appjs'));
+        var files = [].concat(grunt.config('dom_munger.data.appjs'), grunt.config('ngtemplates.main.dest'));
         files.push('bower_components/angular-mocks/angular-mocks.js');
         files.push(spec);
         grunt.config('karma.options.files', files);

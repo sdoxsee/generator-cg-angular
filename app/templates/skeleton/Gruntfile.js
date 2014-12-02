@@ -10,7 +10,7 @@ var pkg = require('./package.json');
 //This enables users to create any directory structure they desire.
 var createFolderGlobs = function(fileTypePatterns) {
   fileTypePatterns = Array.isArray(fileTypePatterns) ? fileTypePatterns : [fileTypePatterns];
-  var ignore = ['node_modules','bower_components','dist','temp'];
+  var ignore = ['node_modules','bower_components','dist','temp','coverage'];
   var fs = require('fs');
   return fs.readdirSync(process.cwd())
           .map(function(file){
@@ -193,6 +193,10 @@ module.exports = function (grunt) {
     karma: {
       options: {
         frameworks: ['jasmine'],
+        preprocessors:        {
+          '**/*.js':  'coverage',
+          'app.js':             'coverage'
+        },
         files: [  //this files data is also updated in the watch handler, if updated change there too
           '<%%= dom_munger.data.appjs %>',
           '<%%= ngtemplates.main.dest %>',
@@ -200,7 +204,14 @@ module.exports = function (grunt) {
           createFolderGlobs('*-spec.js')
         ],
         logLevel:'ERROR',
-        reporters:['mocha'],
+        reporters:['mocha','html','coverage'],
+        htmlReporter:         {
+          outputFile:'tests/units.html'
+        },
+        coverageReporter:     {
+          type:'html',
+          dir: 'coverage/'
+        },
         autoWatch: false, //watching is handled by grunt-contrib-watch
         singleRun: true
       },

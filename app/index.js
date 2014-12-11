@@ -39,7 +39,19 @@ var CgangularGenerator = module.exports = function CgangularGenerator(args, opti
 
         this.config.set('inject',inject);
         this.config.save();
-        this.installDependencies({ skipInstall: options['skip-install'] });
+        this.installDependencies({
+            skipInstall: options['skip-install'],
+	        callback:function () {
+		        // Clean up css processor file that is not used
+		        var css_processor;
+		        if (this.config.get('sass')) {
+			        css_processor = 'app.less';
+		        } else {
+			        css_processor = 'app.scss';
+		        }
+		        this.spawnCommand('rm', [css_processor]);
+	        }.bind(this)
+        });
     });
 
     this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
@@ -94,14 +106,15 @@ CgangularGenerator.prototype.askForSass = function askFor () {
   var cb = this.async();
 
   var prompts = [{
-    name:'sass',
-    type:'confirm',
-    message: 'Do you want to use SASS?',
-    default:false
+    name:'css',
+    type:'list',
+    message: 'Which CSS processor would you like to use?',
+    default:0,
+    choices:['LESS','SASS']
   }];
 
   this.prompt(prompts, function(props) {
-    this.sass = props.sass;
+    this.sass = props.css === 'SASS';
     this.config.set('sass', this.sass);
     cb();
   }.bind(this));

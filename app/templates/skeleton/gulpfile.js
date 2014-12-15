@@ -20,6 +20,11 @@ var jasmine = require('gulp-jasmine');
 var stylish = require('jshint-stylish');
 var domSrc = require('gulp-dom-src');
 
+// Configurable paths for the application
+var appConfig = {
+  dist: 'dist'
+};
+
 var htmlminOptions = {
     collapseBooleanAttributes: true,
     collapseWhitespace: true,
@@ -32,7 +37,7 @@ var htmlminOptions = {
 };
 
 gulp.task('clean', function() {
-    rimraf.sync('dist');
+    rimraf.sync(appConfig.dist);
 });
 
 gulp.task('css', ['clean'], function() {
@@ -40,12 +45,12 @@ gulp.task('css', ['clean'], function() {
         .pipe(less())
         .pipe(cssmin({keepSpecialComments: 0}))
         .pipe(rename('app.full.min.css'))
-        .pipe(gulp.dest('dist/'));
+        .pipe(gulp.dest(appConfig.dist.concat('/')));
 });
 
 gulp.task('js', ['clean'], function() {
 
-    var templateStream = gulp.src(['!node_modules/**','!index.html','!_SpecRunner.html','!.grunt/**','!dist/**','!bower_components/**','**/*.html'])
+    var templateStream = gulp.src(['!node_modules/**','!index.html','!_SpecRunner.html','!.grunt/**','!'.concat(appConfig.dist,'/**','!bower_components/**','**/*.html'])
         .pipe(htmlmin(htmlminOptions))
         .pipe(ngHtml2js({
             moduleName: packagejson.name
@@ -62,10 +67,10 @@ gulp.task('js', ['clean'], function() {
         .pipe(concat('app.full.min.js'))
         .pipe(ngmin())
         .pipe(uglify())
-        .pipe(gulp.dest('dist/'));
+        .pipe(gulp.dest(appConfig.dist.concat('/')));
 
 
-    /* 
+    /*
         Should be able to add to an existing stream easier, like:
         gulp.src([... partials html ...])
           .pipe(htmlmin())
@@ -89,29 +94,29 @@ gulp.task('indexHtml', ['clean'], function() {
             $('head').append('<link rel="stylesheet" href="app.full.min.css">');
         }))
         .pipe(htmlmin(htmlminOptions))
-        .pipe(gulp.dest('dist/'));
+        .pipe(gulp.dest(appConfig.dist.concat('/')));
 });
 
 gulp.task('images', ['clean'], function(){
     return gulp.src('img/**')
         .pipe(imagemin())
-        .pipe(gulp.dest('dist/'));
+        .pipe(gulp.dest(appConfig.dist.concat('/')));
 });
 
 gulp.task('fonts', ['clean'], function(){
     return gulp.src('bower_components/font-awesome/fonts/**')
-        .pipe(gulp.dest('dist/bower_components/font-awesome/fonts/'));
+        .pipe(gulp.dest(appConfig.dist.concat('/bower_components/font-awesome/fonts/'));
 });
 
 gulp.task('jshint', function(){
-    gulp.src(['!node_modules/**','!.grunt/**','!dist/**','!bower_components/**','**/*.js'])
+    gulp.src(['!node_modules/**','!.grunt/**','!'.concat(appConfig.dist,'/**','!bower_components/**','**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter(stylish));
 });
 
 gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'images', 'fonts']);
 
-/* 
+/*
 
 -specifying clean dependency on each task is ugly
 https://github.com/robrich/orchestrator/issues/26

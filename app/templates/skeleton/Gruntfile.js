@@ -71,27 +71,42 @@ module.exports = function (grunt) {
         src:['temp']
       }
     },
-    <% if(sass) { %>
-      sass:       {
-        production:{
-          options:{},
-          files:  {
-            'temp/app.css':'app.scss',
-            'app.css':'app.scss'
-          }
+<% if(sass) { %>
+    sass: {
+      production:{
+        options:{},
+        files:  {
+          'temp/app.css':'app.scss'
         }
-      },
-    <% } else { %>
-      less: {
-        production: {
-          options: {
+      }
+    },
+    injector: {
+      // Inject component css into index.html
+      css: {
+        options: {
+          transform: function(filePath) {
+            filePath = filePath.replace('temp/', '');
+            return '<link rel="stylesheet" href="' + filePath + '">';
           },
-          files: {
-            'temp/app.css': 'app.less'
-          }
+          starttag: '<!-- injector:css -->',
+          endtag: '<!-- endinjector -->'
+        },
+        files: {
+          'index.html': ['temp/app.css']
         }
-      },
-      <% } %>
+      }
+    },
+<% } else { %>
+    less: {
+      production: {
+        options: {
+        },
+        files: {
+          'temp/app.css': 'app.less'
+        }
+      }
+    },
+  <% } %>
     ngtemplates: {
       main: {
         options: {
@@ -214,7 +229,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('build',['jshint','clean:before',<% if(sass) { print("'sass'"); } else { print("'less'"); } %>,'dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
-  grunt.registerTask('serve', ['dom_munger:read',<% if(sass) { print("'sass',"); } %>'jshint','ngtemplates','connect', 'watch']);
+  grunt.registerTask('serve', ['dom_munger:read',<% if(sass) { print("'sass','injector:css',"); } %>'jshint','ngtemplates','connect', 'watch']);
   grunt.registerTask('test',['dom_munger:read','karma:all_tests']);
 
   grunt.event.on('watch', function(action, filepath) {

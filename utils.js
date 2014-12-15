@@ -9,6 +9,7 @@ var ngParseModule = require('ng-parse-module');
 
 exports.JS_MARKER = "<!-- Add New Component JS Above -->";
 exports.LESS_MARKER = "/* Add Component LESS Above */";
+exports.SASS_MARKER = "/* Add Component SASS Above */";
 
 exports.ROUTE_MARKER = "/* Add New Routes Above */";
 exports.STATE_MARKER = "/* Add New States Above */";
@@ -44,7 +45,8 @@ exports.processTemplates = function(name,dir,type,that,defaultDir,configName,mod
     }
     _.chain(fs.readdirSync(templateDirectory))
         .filter(function(template){
-            return template[0] !== '.';
+	        var css = that.config.sass ? '.scss' : '.less';
+	        return template[0] !== '.' && template.indexOf(css) === -1;
         })
         .each(function(template){
             var customTemplateName = template.replace(type,name);

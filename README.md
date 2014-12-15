@@ -14,12 +14,12 @@ Features
    * `grunt serve` task allows you to run a simple development server with watch/livereload enabled.  Additionally, JSHint and the appropriate unit tests are run for the changed files.
 * Integrates Bower for package management
 * Includes Yeoman subgenerators for directives, services, partials, filters, and modules.
-* Integrates LESS and includes Bootstrap via the source LESS files allowing you to reuse Bootstrap vars/mixins/etc.
+* Integrates LESS or SASS and includes Bootstrap via the source LESS/SASS files allowing you to reuse Bootstrap vars/mixins/etc.
 * Easily Testable - Each sub-generator creates a skeleton unit test.  Unit tests can be run via `grunt test` and they run automatically during the grunt watch that is active during `grunt serve`.
 
 Directory Layout
 -------------
-All subgenerators prompt the user to specify where to save the new files.  Thus you can create any directory structure you desire, including nesting.  The generator will create a handful of files in the root of your project including `index.html`, `app.js`, and `app.less`.  You determine how the rest of the project will be structured.
+All subgenerators prompt the user to specify where to save the new files.  Thus you can create any directory structure you desire, including nesting.  The generator will create a handful of files in the root of your project including `index.html`, `app.js`, and `app.[less|scss]`.  You determine how the rest of the project will be structured.
 
 In this example, the user has chosen to group the app into an `admin` folder, a `search` folder, and a `service` folder.
 
@@ -132,7 +132,7 @@ Build Process
 
 The project will include a ready-made Grunt build that will:
 
-* Build all the LESS files into one minified CSS file.
+* Build all the LESS/SASS files into one minified CSS file.
 * Uses [grunt-angular-templates](https://github.com/ericclemmons/grunt-angular-templates) to turn all your partials into Javascript.
 * Uses [grunt-ng-annotate](https://github.com/olov/ng-annotate) to preprocess all Angular injectable methods and make them minification safe.  Thus you don't have to use the array syntax.
 * Concatenates and minifies all Javascript into one file.
@@ -154,6 +154,7 @@ Importantly, grunt-dom-munger uses CSS attribute selectors to manage the parsing
 
 Release History
 -------------
+* 12/11/2014 - v3.2.1 - Add SASS support.
 * 11/9/2014 - v3.2.0 - Switch from ngmin to ng-annotate.  Disabling grunt-contrib-imagemin so Windows users don't encounter its issues.  Subgenerators prompt for a name if not entered.  Other fixes.
 * 7/6/2014 - v3.1.2 - Fix for directive template URLs with backslashes on Windows.
 * 6/10/2014 - v3.1.1 - Fix for backslashes being used in injected routes/tags on subgenerators.

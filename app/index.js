@@ -18,17 +18,40 @@ var CgangularGenerator = module.exports = function CgangularGenerator(args, opti
                 file: 'index.html',
                 marker: cgUtils.JS_MARKER,
                 template: '<script src="<%= filename %>"></script>'
-            },
-            less: {
-                relativeToModule: true,
-                file: '<%= module %>.less',
-                marker: cgUtils.LESS_MARKER,
-                template: '@import "<%= filename %>";'
             }
         };
+
+        if(this.config.get('sass')) {
+          inject.scss = {
+            relativeToModule: true,
+            file: '<%= module %>.scss',
+            marker: cgUtils.SASS_MARKER,
+            template: '@import "<%= filename %>";'
+          };
+        } else {
+          inject.less = {
+            relativeToModule: true,
+            file: '<%= module %>.less',
+            marker: cgUtils.LESS_MARKER,
+            template: '@import "<%= filename %>";'
+          };
+        }
+
         this.config.set('inject',inject);
         this.config.save();
-        this.installDependencies({ skipInstall: options['skip-install'] });
+        this.installDependencies({
+            skipInstall: options['skip-install'],
+	        callback:function () {
+		        // Clean up css processor file that is not used
+		        var css_processor;
+		        if (this.config.get('sass')) {
+			        css_processor = 'app.less';
+		        } else {
+			        css_processor = 'app.scss';
+		        }
+		        this.spawnCommand('rm', [css_processor]);
+	        }.bind(this)
+        });
     });
 
     this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
@@ -77,6 +100,24 @@ CgangularGenerator.prototype.askForUiRouter = function askFor() {
         this.config.set('uirouter',this.uirouter);
         cb();
     }.bind(this));
+};
+
+CgangularGenerator.prototype.askForSass = function askFor () {
+  var cb = this.async();
+
+  var prompts = [{
+    name:'css',
+    type:'list',
+    message: 'Which CSS processor would you like to use?',
+    default:0,
+    choices:['LESS','SASS']
+  }];
+
+  this.prompt(prompts, function(props) {
+    this.sass = props.css === 'SASS';
+    this.config.set('sass', this.sass);
+    cb();
+  }.bind(this));
 };
 
 CgangularGenerator.prototype.app = function app() {

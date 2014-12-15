@@ -45,12 +45,12 @@ gulp.task('css', ['clean'], function() {
         .pipe(less())
         .pipe(cssmin({keepSpecialComments: 0}))
         .pipe(rename('app.full.min.css'))
-        .pipe(gulp.dest(appConfig.dist.concat('/')));
+        .pipe(gulp.dest(appConfig.dist + '/'));
 });
 
 gulp.task('js', ['clean'], function() {
 
-    var templateStream = gulp.src(['!node_modules/**','!index.html','!_SpecRunner.html','!.grunt/**','!'.concat(appConfig.dist,'/**','!bower_components/**','**/*.html'])
+    var templateStream = gulp.src(['!node_modules/**','!index.html','!_SpecRunner.html','!.grunt/**','!' + appConfig.dist + '/**','!bower_components/**','**/*.html'])
         .pipe(htmlmin(htmlminOptions))
         .pipe(ngHtml2js({
             moduleName: packagejson.name
@@ -67,7 +67,7 @@ gulp.task('js', ['clean'], function() {
         .pipe(concat('app.full.min.js'))
         .pipe(ngmin())
         .pipe(uglify())
-        .pipe(gulp.dest(appConfig.dist.concat('/')));
+        .pipe(gulp.dest(appConfig.dist + '/'));
 
 
     /*
@@ -94,22 +94,22 @@ gulp.task('indexHtml', ['clean'], function() {
             $('head').append('<link rel="stylesheet" href="app.full.min.css">');
         }))
         .pipe(htmlmin(htmlminOptions))
-        .pipe(gulp.dest(appConfig.dist.concat('/')));
+        .pipe(gulp.dest(appConfig.dist + '/'));
 });
 
 gulp.task('images', ['clean'], function(){
     return gulp.src('img/**')
         .pipe(imagemin())
-        .pipe(gulp.dest(appConfig.dist.concat('/')));
+        .pipe(gulp.dest(appConfig.dist + '/'));
 });
 
 gulp.task('fonts', ['clean'], function(){
     return gulp.src('bower_components/font-awesome/fonts/**')
-        .pipe(gulp.dest(appConfig.dist.concat('/bower_components/font-awesome/fonts/'));
+        .pipe(gulp.dest(appConfig.dist + '/bower_components/font-awesome/fonts/'));
 });
 
 gulp.task('jshint', function(){
-    gulp.src(['!node_modules/**','!.grunt/**','!'.concat(appConfig.dist,'/**','!bower_components/**','**/*.js'])
+    gulp.src(['!node_modules/**','!.grunt/**','!' + appConfig.dist + '/**','!bower_components/**','**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter(stylish));
 });

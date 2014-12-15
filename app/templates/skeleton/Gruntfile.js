@@ -3,6 +3,11 @@
 
 var pkg = require('./package.json');
 
+// Configurable paths for the application
+var appConfig = {
+  dist: 'dist'
+};
+
 //Using exclusion patterns slows down Grunt significantly
 //instead of creating a set of patterns like '**/*.js' and '!**/node_modules/**'
 //this method is used to create a set of inclusive patterns for all subdirectories
@@ -10,7 +15,7 @@ var pkg = require('./package.json');
 //This enables users to create any directory structure they desire.
 var createFolderGlobs = function(fileTypePatterns) {
   fileTypePatterns = Array.isArray(fileTypePatterns) ? fileTypePatterns : [fileTypePatterns];
-  var ignore = ['node_modules','bower_components','dist','temp'];
+  var ignore = ['node_modules','bower_components',appConfig.dist,'temp'];
   var fs = require('fs');
   return fs.readdirSync(process.cwd())
           .map(function(file){
@@ -37,6 +42,10 @@ module.exports = function (grunt) {
 
   // Project configuration.
   grunt.initConfig({
+
+    // Project settings
+    yeoman: appConfig,
+
     connect: {
       main: {
         options: {
@@ -65,7 +74,7 @@ module.exports = function (grunt) {
     },
     clean: {
       before:{
-        src:['dist','temp']
+        src:['<%%= yeoman.dist %>','temp']
       },
       after: {
         src:['temp']
@@ -93,12 +102,12 @@ module.exports = function (grunt) {
     copy: {
       main: {
         files: [
-          {src: ['img/**'], dest: 'dist/'},
-          {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
-          {src: ['bower_components/bootstrap/fonts/**'], dest: 'dist/',filter:'isFile',expand:true}
-          //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
-          //{src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
-          //{src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
+          {src: ['img/**'], dest: '<%%= yeoman.dist %>'},
+          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%%= yeoman.dist %>',filter:'isFile',expand:true},
+          {src: ['bower_components/bootstrap/fonts/**'], dest: '<%%= yeoman.dist %>',filter:'isFile',expand:true}
+          //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: '<%%= yeoman.dist %>'},
+          //{src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'<%%= yeoman.dist %>/css/',flatten:true,expand:true},
+          //{src: ['bower_components/angular-mocks/angular-mocks.js'], dest: '<%%= yeoman.dist %>'}
         ]
       }
     },
@@ -121,13 +130,13 @@ module.exports = function (grunt) {
           ]
         },
         src:'index.html',
-        dest: 'dist/index.html'
+        dest: '<%%= yeoman.dist %>/index.html'
       }
     },
     cssmin: {
       main: {
         src:['temp/app.css','<%%= dom_munger.data.appcss %>'],
-        dest:'dist/app.full.min.css'
+        dest:'<%%= yeoman.dist %>/app.full.min.css'
       }
     },
     concat: {
@@ -145,7 +154,7 @@ module.exports = function (grunt) {
     uglify: {
       main: {
         src: 'temp/app.full.js',
-        dest:'dist/app.full.min.js'
+        dest:'<%%= yeoman.dist %>/app.full.min.js'
       }
     },
     htmlmin: {
@@ -160,11 +169,11 @@ module.exports = function (grunt) {
           removeStyleLinkTypeAttributes: true
         },
         files: {
-          'dist/index.html': 'dist/index.html'
+          '<%%= yeoman.dist %>/index.html': '<%%= yeoman.dist %>/index.html'
         }
       }
     },
-    //Imagemin has issues on Windows.  
+    //Imagemin has issues on Windows.
     //To enable imagemin:
     // - "npm install grunt-contrib-imagemin"
     // - Comment in this section
@@ -172,9 +181,9 @@ module.exports = function (grunt) {
     // imagemin: {
     //   main:{
     //     files: [{
-    //       expand: true, cwd:'dist/',
+    //       expand: true, cwd:'<%%= yeoman.dist %>',
     //       src:['**/{*.png,*.jpg}'],
-    //       dest: 'dist/'
+    //       dest: '<%%= yeoman.dist %>'
     //     }]
     //   }
     // },
